@@ -7,14 +7,14 @@ const validator = {
     const element = document.getElementById(id);
     return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(element.value);
   },
-
   isMinimumSixChar: function (id) {
     const element = document.getElementById(id);
-    element.value.length >= 6;
+    return element.value.length <= 6;
   },
-
-  isPasswordMatch: function () {
-    const element = document.getElementById(id);
+  isPasswordMatch: function (passId, id) {
+    const password = document.getElementById(passId);
+    const confirmPassword = document.getElementById(id);
+    return password !== confirmPassword;
   },
 };
 
@@ -27,7 +27,6 @@ const fieldValidator = {
   validateEmail: function (id) {
     if (validator.isEmpty(id)) {
       showErrorMessage("emailDiv", "Please Enter Email");
-      //removeErrorMessage("emailDiv");
     } else if (!validator.isEmail(id)) {
       showErrorMessage("emailDiv", "Please Enter valid email");
     }
@@ -35,7 +34,15 @@ const fieldValidator = {
 
   validatePassword: function (id) {
     if (validator.isMinimumSixChar(id)) {
-    } else if (validator.isPasswordMatch(id)) {
+      showErrorMessage(
+        "passwordDiv",
+        "Password length should be minimum 6 character"
+      );
+    }
+  },
+  confirmPassword: function (passId, id) {
+    if (validator.isPasswordMatch(passId, id)) {
+      showErrorMessage("confirmPasswordDiv", "Password should be same");
     }
   },
 };
@@ -43,21 +50,33 @@ const fieldValidator = {
 function showErrorMessage(id, message) {
   const pElement = document.createElement("p");
   pElement.setAttribute("id", id + "Error");
-  const textNode = document.createTextNode(message, "Please Enter username");
-  pElement.append(textNode);
-  document.getElementById(id).appendChild(pElement);
+  if (!document.getElementById(id + "Error")) {
+    const textNode = document.createTextNode(message);
+    pElement.append(textNode);
+    document.getElementById(id).appendChild(pElement);
+  }
 }
 
 function removeErrorMessage(id) {
   const element = document.getElementById(id + "Error");
-  element.parentNode.removeChild(element);
+  if (element && element.parentNode) {
+    element.parentNode.removeChild(element);
+  }
 }
 
 function submit() {
   fieldValidator.validateUserName("username");
   fieldValidator.validateEmail("email");
+  fieldValidator.validatePassword("password");
+  fieldValidator.confirmPassword("password", "confirmPassword");
 }
 
+function init() {
+  document.getElementById("username").addEventListener("click", function (e) {
+    console.log(e.target.value);
+    removeErrorMessage("usernameDiv");
+  });
+}
 window.addEventListener("DOMContentLoaded", function () {
-  // init();
+  init();
 });
