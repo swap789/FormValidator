@@ -14,27 +14,28 @@ const validator = {
   isPasswordMatch: function (passId, id) {
     const password = document.getElementById(passId);
     const confirmPassword = document.getElementById(id);
-    return password !== confirmPassword;
+    return password.value !== confirmPassword.value;
   },
 };
 
 const fieldValidator = {
   validateUserName: function (id) {
     if (validator.isEmpty(id)) {
-      showErrorMessage("usernameDiv", "Please Enter username");
+      showErrorMessage("username", "usernameDiv", "Please Enter username");
     }
   },
   validateEmail: function (id) {
     if (validator.isEmpty(id)) {
-      showErrorMessage("emailDiv", "Please Enter Email");
+      showErrorMessage("email", "emailDiv", "Please Enter Email");
     } else if (!validator.isEmail(id)) {
-      showErrorMessage("emailDiv", "Please Enter valid email");
+      showErrorMessage("email", "emailDiv", "Please Enter valid email");
     }
   },
 
   validatePassword: function (id) {
     if (validator.isMinimumSixChar(id)) {
       showErrorMessage(
+        "password",
         "passwordDiv",
         "Password length should be minimum 6 character"
       );
@@ -42,25 +43,31 @@ const fieldValidator = {
   },
   confirmPassword: function (passId, id) {
     if (validator.isPasswordMatch(passId, id)) {
-      showErrorMessage("confirmPasswordDiv", "Password should be same");
+      showErrorMessage(
+        "confirmPassword",
+        "confirmPasswordDiv",
+        "Password should be same"
+      );
     }
   },
 };
 
-function showErrorMessage(id, message) {
+function showErrorMessage(textFieldId, id, message) {
   const pElement = document.createElement("p");
   pElement.setAttribute("id", id + "Error");
   if (!document.getElementById(id + "Error")) {
     const textNode = document.createTextNode(message);
+    document.getElementById(textFieldId).classList.add("red-border");
     pElement.append(textNode);
     document.getElementById(id).appendChild(pElement);
   }
 }
 
-function removeErrorMessage(id) {
+function removeErrorMessage(textFieldId, id) {
   const element = document.getElementById(id + "Error");
   if (element && element.parentNode) {
     element.parentNode.removeChild(element);
+    document.getElementById(textFieldId).classList.remove("red-border");
   }
 }
 
@@ -72,11 +79,20 @@ function submit() {
 }
 
 function init() {
-  document.getElementById("username").addEventListener("click", function (e) {
-    console.log(e.target.value);
-    removeErrorMessage("usernameDiv");
-  });
+  onKeyPress("username", "usernameDiv");
+  onKeyPress("email", "emailDiv");
+  onKeyPress("password", "passwordDiv");
+  onKeyPress("confirmPassword", "confirmPasswordDiv");
 }
+
+function onKeyPress(textFieldId, divId) {
+  document
+    .getElementById(textFieldId)
+    .addEventListener("keydown", function (e) {
+      removeErrorMessage(textFieldId, divId);
+    });
+}
+
 window.addEventListener("DOMContentLoaded", function () {
   init();
 });

@@ -4,30 +4,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Form Validator</title>
+    <link rel="stylesheet" href="./css/style.css" />
   </head>
   <body>
-    <div>
+    <div class="form">
       <div id="usernameDiv">
-        <label>Username</label>
         <input id="username" type="text" placeholder="username" />
       </div>
       <div id="emailDiv">
-        <label>Email</label>
         <input id="email" type="text" placeholder="Email" />
       </div>
       <div id="passwordDiv">
-        <label>Password</label>
         <input id="password" type="text" placeholder="Password" />
       </div>
       <div id="confirmPasswordDiv">
-        <label>Confirm Password</label>
         <input
           id="confirmPassword"
           type="text"
           placeholder="Confirm password"
         />
       </div>
-      <button onclick="submit()">Submit</button>
+      <button id="submit" onclick="submit()">Submit</button>
+      <button id="clear" onclick="submit()">Clear</button>
     </div>
     <script src="./js/main.js"></script>
   </body>
