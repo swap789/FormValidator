@@ -8,12 +8,15 @@ body {
 .form {
   position: relative;
   top: 100px;
-  min-height: 500px;
+  min-height: 380px;
   width: 400px;
   border: 1px solid green;
   margin: auto;
   border-radius: 5px;
   padding: 20px;
+}
+h1 {
+  margin-left: 40px;
 }
 
 input {

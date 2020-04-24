@@ -1,81 +1,121 @@
-const validator = {
-  isEmpty: function (id) {
-    const element = document.getElementById(id);
-    return element.value === "";
+const init = {
+  _getElement: function (id) {
+    return document.getElementById(id);
   },
-  isEmail: function (id) {
-    const element = document.getElementById(id);
-    return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(element.value);
+  validator: {
+    isEmpty: function (id) {
+      const element = init._getElement(id);
+      return element.value === "";
+    },
+    isEmail: function (id) {
+      const element = init._getElement(id);
+      return !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
+        element.value
+      );
+    },
+    isMinimumSixChar: function (id) {
+      const element = init._getElement(id);
+      return element.value.length <= 6;
+    },
+    isPasswordMatch: function (passId, id) {
+      const password = init._getElement(id);
+      const confirmPassword = init._getElement(id);
+      return password.value !== confirmPassword.value;
+    },
   },
-  isMinimumSixChar: function (id) {
-    const element = document.getElementById(id);
-    return element.value.length <= 6;
+  fieldValidator: {
+    validateUserName: function (id) {
+      return init.validator.isEmpty(id);
+    },
+    validateEmail: function (id) {
+      if (init.validator.isEmpty(id)) {
+        return true;
+      } else if (init.validator.isEmail(id)) {
+        return true;
+      }
+    },
+    validatePassword: function (id) {
+      return init.validator.isMinimumSixChar(id);
+    },
+    confirmPassword: function (passId, id) {
+      return init.validator.isPasswordMatch(passId, id);
+    },
   },
-  isPasswordMatch: function (passId, id) {
-    const password = document.getElementById(passId);
-    const confirmPassword = document.getElementById(id);
-    return password.value !== confirmPassword.value;
+  messages: {
+    showErrorMessage: function (textFieldId, id, message) {
+      const pElement = document.createElement("p");
+      pElement.setAttribute("id", id + "Error");
+      if (!document.getElementById(id + "Error")) {
+        const textNode = document.createTextNode(message);
+        document.getElementById(textFieldId).classList.add("red-border");
+        pElement.append(textNode);
+        document.getElementById(id).appendChild(pElement);
+      }
+    },
+    removeErrorMessage: function (textFieldId, id) {
+      const element = document.getElementById(id + "Error");
+      if (element && element.parentNode) {
+        element.parentNode.removeChild(element);
+        document.getElementById(textFieldId).classList.remove("red-border");
+      }
+    },
   },
 };
 
-const fieldValidator = {
-  validateUserName: function (id) {
-    if (validator.isEmpty(id)) {
-      showErrorMessage("username", "usernameDiv", "Please Enter username");
+const messages = {
+  showErrorMessage: function (textFieldId, id, message) {
+    const pElement = document.createElement("p");
+    pElement.setAttribute("id", id + "Error");
+    if (!document.getElementById(id + "Error")) {
+      const textNode = document.createTextNode(message);
+      document.getElementById(textFieldId).classList.add("red-border");
+      pElement.append(textNode);
+      document.getElementById(id).appendChild(pElement);
     }
   },
-  validateEmail: function (id) {
-    if (validator.isEmpty(id)) {
-      showErrorMessage("email", "emailDiv", "Please Enter Email");
-    } else if (!validator.isEmail(id)) {
-      showErrorMessage("email", "emailDiv", "Please Enter valid email");
-    }
-  },
-
-  validatePassword: function (id) {
-    if (validator.isMinimumSixChar(id)) {
-      showErrorMessage(
-        "password",
-        "passwordDiv",
-        "Password length should be minimum 6 character"
-      );
-    }
-  },
-  confirmPassword: function (passId, id) {
-    if (validator.isPasswordMatch(passId, id)) {
-      showErrorMessage(
-        "confirmPassword",
-        "confirmPasswordDiv",
-        "Password should be same"
-      );
+  removeErrorMessage: function (textFieldId, id) {
+    const element = document.getElementById(id + "Error");
+    if (element && element.parentNode) {
+      element.parentNode.removeChild(element);
+      document.getElementById(textFieldId).classList.remove("red-border");
     }
   },
 };
 
-function showErrorMessage(textFieldId, id, message) {
-  const pElement = document.createElement("p");
-  pElement.setAttribute("id", id + "Error");
-  if (!document.getElementById(id + "Error")) {
-    const textNode = document.createTextNode(message);
-    document.getElementById(textFieldId).classList.add("red-border");
-    pElement.append(textNode);
-    document.getElementById(id).appendChild(pElement);
-  }
-}
+function showErrorMessage(textFieldId, id, message) {}
 
-function removeErrorMessage(textFieldId, id) {
-  const element = document.getElementById(id + "Error");
-  if (element && element.parentNode) {
-    element.parentNode.removeChild(element);
-    document.getElementById(textFieldId).classList.remove("red-border");
-  }
-}
+function removeErrorMessage(textFieldId, id) {}
 
 function submit() {
-  fieldValidator.validateUserName("username");
-  fieldValidator.validateEmail("email");
-  fieldValidator.validatePassword("password");
-  fieldValidator.confirmPassword("password", "confirmPassword");
+  let result = true;
+  if (fieldValidator.validateUserName("username")) {
+    result = false;
+    showErrorMessage("username", "usernameDiv", "Please Enter username");
+  }
+  if (fieldValidator.validateEmail("email")) {
+    result = false;
+    showErrorMessage("email", "emailDiv", "Please Enter valid email");
+  }
+  if (fieldValidator.validatePassword("password")) {
+    result = false;
+    showErrorMessage(
+      "password",
+      "passwordDiv",
+      "Password length should be minimum 6 character"
+    );
+  }
+  if (fieldValidator.confirmPassword("password", "confirmPassword")) {
+    result = false;
+    showErrorMessage(
+      "confirmPassword",
+      "confirmPasswordDiv",
+      "Password should be same"
+    );
+  }
+
+  if (result) {
+    alert("Form submitted successfully");
+  }
 }
 
 function init() {
@@ -83,6 +123,13 @@ function init() {
   onKeyPress("email", "emailDiv");
   onKeyPress("password", "passwordDiv");
   onKeyPress("confirmPassword", "confirmPasswordDiv");
+}
+
+function clear() {
+  document.getElementById("username").setAttribute("value", "");
+  document.getElementById("email").setAttribute("value", "");
+  document.getElementById("password").setAttribute("value", "");
+  document.getElementById("confirmPassword").setAttribute("value", "");
 }
 
 function onKeyPress(textFieldId, divId) {
